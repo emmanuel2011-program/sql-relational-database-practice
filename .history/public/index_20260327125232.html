@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sforte Microfinance Admin</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <div class="sidebar">
+    <h2>Sforte Admin</h2>
+    <nav>
+        <p onclick="showPage('dashboard-section')">Dashboard</p>
+        <p onclick="showPage('investors-section')">Investors</p>
+        <p onclick="showPage('loans-section')">Loans</p>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div id="dashboard-section" class="page-section">
+        <h1>Financial Overview</h1>
+        <div class="stats-grid">
+            <div class="card">
+                <h3>Total Liquidity</h3>
+                <p id="total-funds">₦0.00</p>
+            </div>
+            </div>
+    </div>
+
+    <div id="investors-section" class="page-section" style="display:none;">
+        <h1>Investor Management</h1>
+        <table>
+            <thead>
+                <tr><th>Member</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody id="investor-table-body"></tbody>
+        </table>
+    </div>
+
+    <div id="loans-section" class="page-section" style="display:none;">
+        <h1>Loan Applications</h1>
+        <p>Loan tracking and approval database results will appear here.</p>
+        </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

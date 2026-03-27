@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sforte Microfinance Admin</title>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+    <div class="sidebar">
+        <h2>Sforte Admin</h2>
+        <nav>
+            <p>Dashboard</p>
+            <p>Investors</p>
+            <p>Loans</p>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h1>Financial Overview</h1>
+        
+        <div class="stats-grid">
+            <div class="card">
+                <h3>Total Liquidity</h3>
+                <p id="total-funds">₦0.00</p>
+            </div>
+            <div class="card">
+                <h3>Avg. Investment</h3>
+                <p id="avg-funds">₦0.00</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3>Recent Portfolio Activity</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="investor-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sforte Microfinance Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Sforte Admin</h2>
+        <nav>
+            <p class="nav-item active" onclick="showPage('dashboard', this)">Dashboard</p>
+            <p class="nav-item" onclick="showPage('investors', this)">Investors</p>
+            <p class="nav-item" onclick="showPage('loans', this)">Loans</p>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div id="dashboard-page" class="page-section">
+            <h1>Financial Overview</h1>
+            <div class="stats-grid">
+                <div class="card">
+                    <h3>Total Liquidity</h3>
+                    <p id="total-funds">₦0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Avg. Investment</h3>
+                    <p id="avg-funds">₦0.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="investors-page" class="page-section" style="display:none;">
+            <h1>Investor Management</h1>
+
+            <div class="form-container">
+                <h3>Register New Investment</h3>
+                <form id="investor-form" onsubmit="registerInvestor(event)">
+                    <input type="text" id="fname" placeholder="First Name" required>
+                    <input type="text" id="sname" placeholder="Surname" required>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                    <input type="number" id="amount" placeholder="Investment Amount (₦)" required>
+                    <button type="submit" class="btn-primary">Add to Portfolio</button>
+                </form>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="investor-table-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="loans-page" class="page-section" style="display:none;">
+            <h1>Active Loans</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Principal</th>
+                        <th>Interest Rate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="loan-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
