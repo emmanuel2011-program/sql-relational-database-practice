@@ -82,41 +82,34 @@ async function fetchStats() {
 
 // 1. Function to switch pages
 // 1. NAVIGATION
-// 1. NAVIGATION LOGIC
 function showPage(pageId, element) {
-    console.log("Navigating to:", pageId);
-    // Hide all sections
     document.querySelectorAll('.page-section').forEach(sec => sec.style.display = 'none');
-    
-    // Show the specific page
-    const targetPage = document.getElementById(pageId + '-page');
-    if (targetPage) {
-        targetPage.style.display = 'block';
-    }
-
-    // Update Sidebar Active Class
+    document.getElementById(pageId + '-page').style.display = 'block';
     document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
     if (element) element.classList.add('active');
 
-    // Load fresh data from SQL for the specific page
     if (pageId === 'dashboard') loadDashboardStats();
     if (pageId === 'investors') loadInvestorsTable();
     if (pageId === 'loans') loadLoansTable();
 }
 
-// 2. DASHBOARD DATA (SQL AGGREGATES)
+// 2. DASHBOARD DATA (Aggregates & Date Filter)
 async function loadDashboardStats() {
-    try {
-        const res = await fetch('/api/stats');
-        const data = await res.json();
-        document.getElementById('total-funds').innerText = `₦${Number(data.total).toLocaleString()}`;
-        document.getElementById('avg-funds').innerText = `₦${Number(data.average).toLocaleString()}`;
-    } catch (err) {
-        console.error("Dashboard error:", err);
-    }
+    const res = await fetch('/api/stats');
+    const data = await res.json();
+    document.getElementById('total-funds').innerText = `₦${Number(data.total).toLocaleString()}`;
+    document.getElementById('avg-funds').innerText = `₦${Number(data.average).toLocaleString()}`;
+    
+    // Load Filtering Requirement
+    const recentRes = await fetch('/api/investments/recent');
+    const recentData = await recentRes.json();
+    const list = document.getElementById('recent-list');
+    list.innerHTML = recentData.length 
+        ? recentData.map(d => `<li>₦${Number(d.amount).toLocaleString()} - ${new Date(d.created_at).toLocaleDateString()}</li>`).join('') 
+        : "<li>No activity in last 30 days</li>";
 }
 
-// 3. INVESTOR LOGIC (SQL JOIN & INSERT)
+// 3. INVESTOR LOGIC (Join & Create)
 async function registerInvestor(event) {
     event.preventDefault();
     const payload = {
@@ -125,13 +118,11 @@ async function registerInvestor(event) {
         email: document.getElementById('email').value,
         amount: document.getElementById('amount').value
     };
-
     const res = await fetch('/api/investors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     });
-
     if (res.ok) { 
         alert("Investor Added!"); 
         document.getElementById('investor-form').reset(); 
@@ -142,10 +133,7 @@ async function registerInvestor(event) {
 async function loadInvestorsTable() {
     const res = await fetch('/api/member-portfolio');
     const data = await res.json();
-    const tableBody = document.getElementById('investor-table-body');
-    if (!tableBody) return;
-
-    tableBody.innerHTML = data.map(item => `
+    document.getElementById('investor-table-body').innerHTML = data.map(item => `
         <tr>
             <td>${item.first_name} ${item.surname}</td>
             <td>₦${Number(item.amount).toLocaleString()}</td>
@@ -158,57 +146,40 @@ async function loadInvestorsTable() {
     `).join('');
 }
 
-// 4. LOAN LOGIC (THE UNRESPONSIVE BUTTON FIX)
+// 4. LOAN LOGIC (Third Table)
 async function issueLoan(event) {
-    event.preventDefault(); // This stops the page from refreshing!
-    console.log("Issue Loan Form Submitted");
-
+    event.preventDefault();
     const payload = {
         borrower_name: document.getElementById('borrower').value,
         principal: document.getElementById('principal').value,
         interest_rate: document.getElementById('rate').value
     };
-
-    try {
-        const res = await fetch('/api/loans', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) { 
-            alert("✅ Loan Issued Successfully!"); 
-            document.getElementById('loan-form').reset(); 
-            loadLoansTable(); // Refresh the table below
-        } else {
-            alert("❌ Server Error: Could not save loan.");
-        }
-    } catch (error) {
-        console.error("Loan post error:", error);
+    const res = await fetch('/api/loans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (res.ok) { 
+        alert("Loan Issued!"); 
+        document.getElementById('loan-form').reset(); 
+        loadLoansTable(); 
     }
 }
 
 async function loadLoansTable() {
-    try {
-        const res = await fetch('/api/loans');
-        const data = await res.json();
-        const tableBody = document.getElementById('loan-table-body');
-        if (!tableBody) return;
-
-        tableBody.innerHTML = data.map(l => `
-            <tr>
-                <td>${l.borrower_name}</td>
-                <td>₦${Number(l.principal).toLocaleString()}</td>
-                <td>${l.interest_rate}%</td>
-                <td><button class="btn-delete" onclick="deleteLoan(${l.id})">Settled</button></td>
-            </tr>
-        `).join('');
-    } catch (err) {
-        console.error("Load loans error:", err);
-    }
+    const res = await fetch('/api/loans');
+    const data = await res.json();
+    document.getElementById('loan-table-body').innerHTML = data.map(l => `
+        <tr>
+            <td>${l.borrower_name}</td>
+            <td>₦${Number(l.principal).toLocaleString()}</td>
+            <td>${l.interest_rate}%</td>
+            <td><button class="btn-delete" onclick="deleteLoan(${l.id})">Settled</button></td>
+        </tr>
+    `).join('');
 }
 
-// 5. UPDATE & DELETE ACTIONS
+// 5. UPDATE & DELETE
 async function approveInvestment(id) { 
     await fetch(`/api/investments/approve/${id}`, { method: 'PUT' }); 
     loadInvestorsTable(); 
@@ -216,7 +187,7 @@ async function approveInvestment(id) {
 }
 
 async function removeMember(id) { 
-    if(confirm("Permanently delete this record from Sforte database?")) { 
+    if(confirm("Delete record?")) { 
         await fetch(`/api/investments/${id}`, { method: 'DELETE' }); 
         loadInvestorsTable(); 
         loadDashboardStats(); 
@@ -224,14 +195,11 @@ async function removeMember(id) {
 }
 
 async function deleteLoan(id) { 
-    if(confirm("Confirm loan settlement?")) { 
+    if(confirm("Settle loan?")) { 
         await fetch(`/api/loans/${id}`, { method: 'DELETE' }); 
         loadLoansTable(); 
     }
 }
 
-// Initialization
-window.onload = () => {
-    console.log("Sforte Admin Initialized");
-    loadDashboardStats();
-};
+// Startup
+window.onload = loadDashboardStats;
