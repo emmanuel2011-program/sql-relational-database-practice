@@ -129,7 +129,7 @@ app.get('/seed', async (req, res) => {
     await sql`CREATE TABLE IF NOT EXISTS memberships (id SERIAL PRIMARY KEY, first_name TEXT, surname TEXT, email TEXT UNIQUE)`;
     await sql`CREATE TABLE IF NOT EXISTS investments (id SERIAL PRIMARY KEY, member_id INTEGER REFERENCES memberships(id), amount DECIMAL, status TEXT DEFAULT 'pending', created_at TIMESTAMP DEFAULT NOW())`;
     
-    // The is to create the loans table for the loan issuance feature (Requirement: SQL CREATE TABLE)
+    // The is to 
     await sql`CREATE TABLE IF NOT EXISTS loans (id SERIAL PRIMARY KEY, borrower_name TEXT, principal DECIMAL, interest_rate DECIMAL, created_at TIMESTAMP DEFAULT NOW())`;
 
     res.send("✅ Tables created! Try issuing a loan now.");

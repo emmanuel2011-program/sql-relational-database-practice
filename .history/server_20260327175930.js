@@ -111,7 +111,7 @@ app.delete('/api/investments/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 7. DATE FILTERING INVESTMENTS FOR THE DASHBOARD
+// 7. DATE FILTERING INVESTMENTS For the dashboard 
 app.get('/api/investments/recent', async (req, res) => {
   try {
     const recentData = await sql`
@@ -123,13 +123,13 @@ app.get('/api/investments/recent', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 8. DATABASE SETUP (Seeding) This is a quick route to create the necessary tables.  
+// 8. DATABASE SETUP (Seeding)
 app.get('/seed', async (req, res) => {
   try {
     await sql`CREATE TABLE IF NOT EXISTS memberships (id SERIAL PRIMARY KEY, first_name TEXT, surname TEXT, email TEXT UNIQUE)`;
     await sql`CREATE TABLE IF NOT EXISTS investments (id SERIAL PRIMARY KEY, member_id INTEGER REFERENCES memberships(id), amount DECIMAL, status TEXT DEFAULT 'pending', created_at TIMESTAMP DEFAULT NOW())`;
     
-    // The is to create the loans table for the loan issuance feature (Requirement: SQL CREATE TABLE)
+    // Ensure the LOANS table exists for your button to work!
     await sql`CREATE TABLE IF NOT EXISTS loans (id SERIAL PRIMARY KEY, borrower_name TEXT, principal DECIMAL, interest_rate DECIMAL, created_at TIMESTAMP DEFAULT NOW())`;
 
     res.send("✅ Tables created! Try issuing a loan now.");

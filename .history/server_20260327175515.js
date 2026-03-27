@@ -24,7 +24,7 @@ app.get('/test', async (req, res) => {
   }
 });
 
-// 2. DASHBOARD ROUTE : AGGREGATES CALCULATIONS FOR THE AVERAGE AMOUNT AND TOTAL INVESTED AMOUNT (Requirement: SQL AGGREGATE FUNCTIONS)
+// 2. DASHBOARD ROUTE (Requirement: AGGREGATES)
 app.get('/api/stats', async (req, res) => {
   try {
     const stats = await sql`SELECT SUM(amount) as total, AVG(amount) as average FROM investments WHERE status = 'approved'`;
@@ -37,7 +37,7 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-// 3. INVESTORS: CODE TOCREATE AND INSERT ACROSS TWO TABLES (Requirement: SQL JOIN & INSERT)
+// 3. INVESTORS: CREATE (INSERT) across two tables
 app.post('/api/investors', async (req, res) => {
     try {
         const { first_name, surname, email, amount } = req.body;
@@ -71,7 +71,7 @@ app.get('/api/member-portfolio', async (req, res) => {
   }
 });
 
-// 5. LOANS: To GET ALL THE LOANS BY DESCENDING ORDER OF CREATION (Requirement: SQL SELECT with ORDER BY) 
+// 5. LOANS: To GET ALL the loans 
 app.get('/api/loans', async (req, res) => {
   try {
     const data = await sql`SELECT * FROM loans ORDER BY created_at DESC`;
@@ -96,7 +96,7 @@ app.post('/api/loans', async (req, res) => {
     }
 });
 
-// 6. UPDATE & DELETE ROUTES FOR INVESTMENTS (Requirement: SQL UPDATE & DELETE)
+// 6. UPDATE & DELETE
 app.put('/api/investments/approve/:id', async (req, res) => {
   try {
     await sql`UPDATE investments SET status = 'approved' WHERE id = ${req.params.id}`;
@@ -111,7 +111,7 @@ app.delete('/api/investments/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 7. DATE FILTERING INVESTMENTS FOR THE DASHBOARD
+// 7. DATE FILTERING For the dashboard 
 app.get('/api/investments/recent', async (req, res) => {
   try {
     const recentData = await sql`
@@ -123,13 +123,13 @@ app.get('/api/investments/recent', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// 8. DATABASE SETUP (Seeding) This is a quick route to create the necessary tables.  
+// 8. DATABASE SETUP (Seeding)
 app.get('/seed', async (req, res) => {
   try {
     await sql`CREATE TABLE IF NOT EXISTS memberships (id SERIAL PRIMARY KEY, first_name TEXT, surname TEXT, email TEXT UNIQUE)`;
     await sql`CREATE TABLE IF NOT EXISTS investments (id SERIAL PRIMARY KEY, member_id INTEGER REFERENCES memberships(id), amount DECIMAL, status TEXT DEFAULT 'pending', created_at TIMESTAMP DEFAULT NOW())`;
     
-    // The is to create the loans table for the loan issuance feature (Requirement: SQL CREATE TABLE)
+    // Ensure the LOANS table exists for your button to work!
     await sql`CREATE TABLE IF NOT EXISTS loans (id SERIAL PRIMARY KEY, borrower_name TEXT, principal DECIMAL, interest_rate DECIMAL, created_at TIMESTAMP DEFAULT NOW())`;
 
     res.send("✅ Tables created! Try issuing a loan now.");
